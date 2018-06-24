@@ -33,28 +33,36 @@ if(image.complete){
 
 function desaturateImage(image) {
 
+	// Create canvas
 	var canvas = document.createElement('canvas');
 	canvas.width  = image.width;
 	canvas.height = image.height;
 
+	// Get webGL context
 	var ctx;
 	try {
 		ctx = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
-	} catch(e) {}
-
+	} catch(e) {
+		// Do nothing
+	}
 	if (!ctx) {
-		// You could fallback to 2D methods here
-		alert("Sorry, it seems WebGL is not available.");
+		console.error("No webGL to create StereoWebView");
+		return;
 	}
 
+	// Load shaders
 	getFile("swv_vertex.glsl", function(txt) {
 		var vertexShaderSource = txt;
 		getFile("swv_fragment.glsl", function(txt) {
 			var fragmentShaderSource = txt;
 			var program = createWebGLProgram(ctx, vertexShaderSource, fragmentShaderSource);
-			if (!ctx.getProgramParameter(program, ctx.LINK_STATUS))
+			if (!ctx.getProgramParameter(program, ctx.LINK_STATUS)) {
+				console.error("StereoWebView GLSL program cannot be linked");
 				return;
+			}
 
+			// Replace image by canvas
+			console.info("StereoWebView replaces image", image);
 			image.parentNode.insertBefore(canvas, image);
 			image.parentNode.removeChild(image);
 
@@ -76,7 +84,7 @@ function desaturateImage(image) {
 			ctx.enableVertexAttribArray(positionLocation);
 			ctx.vertexAttribPointer(positionLocation, 2, ctx.FLOAT, false, 0, 0);
 
-			//Position texture
+			// Position texture
 			var texCoordLocation = ctx.getAttribLocation(program, "a_texCoord");
 			var texCoordBuffer = ctx.createBuffer();
 			ctx.bindBuffer(ctx.ARRAY_BUFFER, texCoordBuffer);
@@ -90,18 +98,16 @@ function desaturateImage(image) {
 			ctx.enableVertexAttribArray(texCoordLocation);
 			ctx.vertexAttribPointer(texCoordLocation, 2, ctx.FLOAT, false, 0, 0);
 
-			// Create a texture.
+			// Create a texture from image
 			var texture = ctx.createTexture();
 			ctx.bindTexture(ctx.TEXTURE_2D, texture);
-			// Set the parameters so we can render any size image.
 			ctx.texParameteri(ctx.TEXTURE_2D, ctx.TEXTURE_WRAP_S, ctx.CLAMP_TO_EDGE);
 			ctx.texParameteri(ctx.TEXTURE_2D, ctx.TEXTURE_WRAP_T, ctx.CLAMP_TO_EDGE);
 			ctx.texParameteri(ctx.TEXTURE_2D, ctx.TEXTURE_MIN_FILTER, ctx.NEAREST);
 			ctx.texParameteri(ctx.TEXTURE_2D, ctx.TEXTURE_MAG_FILTER, ctx.NEAREST);
-			// Load the image into the texture.
 			ctx.texImage2D(ctx.TEXTURE_2D, 0, ctx.RGBA, ctx.RGBA, ctx.UNSIGNED_BYTE, image);
 
-			// Draw the rectangle.
+			// Draw the rectangle
 			ctx.drawArrays(ctx.TRIANGLES, 0, 6);
 		});
 	});
