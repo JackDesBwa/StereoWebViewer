@@ -1,4 +1,4 @@
-var images = document.querySelectorAll("img[data-swv-format]");
+var images = document.querySelectorAll("img[data-swv-auto]:not([data-swv-auto='0'])");
 for (var i = 0; i < images.length; i++) {
 	var image = images[i];
 	if (image.complete) {
