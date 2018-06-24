@@ -134,6 +134,7 @@ function transformImage(image) {
 			var redraw = function() { ctx.drawArrays(ctx.TRIANGLES, 0, 6); }
 			redraw();
 
+			// Handle keydown events
 			canvas.addEventListener('keydown', function (event) {
 				var k = event.key;
 				if (k == "i" || k == "p" || k == "x" || k == "a" || k == "l" || k == "r") {
@@ -142,6 +143,25 @@ function transformImage(image) {
 					redraw();
 				}
 			});
+
+			// Handle click/tap events
+			var clicktap_last;
+			var clicktap = function(event) {
+				var now = new Date().getTime();
+				var delay = now - clicktap_last;
+				if((delay < 600) && (delay > 0)){
+					var modes = "pxailr";
+					var i = modes.indexOf(String.fromCharCode(ctx.getUniform(program, oMode))) + 1;
+					if (i >= modes.length)
+						i = 0;
+					ctx.uniform1i(oMode, modes.charCodeAt(i));
+					event.preventDefault();
+					redraw();
+				}
+				clicktap_last = now;
+			}
+			canvas.addEventListener('mousedown', clicktap);
+			canvas.addEventListener('touchstart', clicktap);
 		});
 	});
 }
