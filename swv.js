@@ -70,7 +70,11 @@ function transformImage(image) {
 			ctx.uniform2f(resolutionLocation, canvas.width, canvas.height);
 
 			// Set input and outpu modes
-			var mode = image.getAttribute("data-swv-format").charCodeAt(0);
+			var mode = image.getAttribute("data-swv-format");
+			if (mode)
+				mode = mode.charCodeAt(0);
+			else
+				mode = 0x78;
 			var iMode = ctx.getUniformLocation(program, "u_iMode");
 			ctx.uniform1i(iMode, mode);
 			var oMode = ctx.getUniformLocation(program, "u_oMode");
