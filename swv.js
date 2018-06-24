@@ -68,11 +68,11 @@ function transformImage(image) {
 			ctx.bindBuffer(ctx.ARRAY_BUFFER, buffer);
 			ctx.bufferData(ctx.ARRAY_BUFFER, new Float32Array([
 				0, 0,
-				image.width, 0,
-				0, image.height,
-				0, image.height,
-				image.width, 0,
-				image.width, image.height]), ctx.STATIC_DRAW);
+				canvas.width, 0,
+				0, canvas.height,
+				0, canvas.height,
+				canvas.width, 0,
+				canvas.width, canvas.height]), ctx.STATIC_DRAW);
 			ctx.enableVertexAttribArray(positionLocation);
 			ctx.vertexAttribPointer(positionLocation, 2, ctx.FLOAT, false, 0, 0);
 
