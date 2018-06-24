@@ -1,38 +1,11 @@
-// Helper function to compile webGL program
-createWebGLProgram = function(ctx, vertexShaderSource, fragmentShaderSource) {
-	this.ctx = ctx;
-	this.compileShader = function(shaderSource, shaderType) {
-		var shader = this.ctx.createShader(shaderType);
-		this.ctx.shaderSource(shader, shaderSource);
-		this.ctx.compileShader(shader);
-		return shader;
-	};
-	var program = this.ctx.createProgram();
-	this.ctx.attachShader(program, this.compileShader(vertexShaderSource, this.ctx.VERTEX_SHADER));
-	this.ctx.attachShader(program, this.compileShader(fragmentShaderSource, this.ctx.FRAGMENT_SHADER));
-	this.ctx.linkProgram(program);
-	this.ctx.useProgram(program);
-	return program;
-}
-
-// Helper function to get files
-getFile = function(url, then) {
-	var xhr = new XMLHttpRequest();
-	xhr.onloadend = function() { then(xhr.responseText, xhr); }
-	xhr.overrideMimeType('text/plain');
-	xhr.open("GET", url);
-	xhr.send();
-}
-
 var image = document.getElementById('image');
 if(image.complete){
-	desaturateImage(image);
+	transformImage(image);
 } else {
-	image.onload = function(){ desaturateImage(image); };
+	image.onload = function(){ transformImage(image); };
 }
 
-function desaturateImage(image) {
-
+function transformImage(image) {
 	// Create canvas
 	var canvas = document.createElement('canvas');
 	canvas.width  = image.width;
@@ -50,12 +23,31 @@ function desaturateImage(image) {
 		return;
 	}
 
+	// Helper function to load files
+	loadFile = function(url, then) {
+		var xhr = new XMLHttpRequest();
+		xhr.onloadend = function() { then(xhr.responseText, xhr); }
+		xhr.overrideMimeType('text/plain');
+		xhr.open("GET", url);
+		xhr.send();
+	}
+
 	// Load shaders
-	getFile("swv_vertex.glsl", function(txt) {
-		var vertexShaderSource = txt;
-		getFile("swv_fragment.glsl", function(txt) {
-			var fragmentShaderSource = txt;
-			var program = createWebGLProgram(ctx, vertexShaderSource, fragmentShaderSource);
+	var program = ctx.createProgram();
+	loadFile("swv_vertex.glsl", function(txt) {
+		var vertexShader = ctx.createShader(ctx.VERTEX_SHADER);
+		ctx.shaderSource(vertexShader, txt);
+		ctx.compileShader(vertexShader);
+		ctx.attachShader(program, vertexShader);
+		loadFile("swv_fragment.glsl", function(txt) {
+			var fragmentShader = ctx.createShader(ctx.FRAGMENT_SHADER);
+			ctx.shaderSource(fragmentShader, txt);
+			ctx.compileShader(fragmentShader);
+			ctx.attachShader(program, fragmentShader);
+
+			ctx.linkProgram(program);
+			ctx.useProgram(program);
+
 			if (!ctx.getProgramParameter(program, ctx.LINK_STATUS)) {
 				console.error("StereoWebView GLSL program cannot be linked");
 				return;
