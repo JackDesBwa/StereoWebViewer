@@ -54,6 +54,8 @@ function transformImage(image) {
 
 			if (!ctx.getProgramParameter(program, ctx.LINK_STATUS)) {
 				console.error("StereoWebView GLSL program cannot be linked");
+				console.debug("Vertex log:\n", ctx.getShaderInfoLog(vertexShader));
+				console.debug("Fragment log:\n", ctx.getShaderInfoLog(fragmentShader));
 				return;
 			}
 
