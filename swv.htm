@@ -4,9 +4,15 @@
 	<meta charset="utf-8">
 	<title>Stereo Web Viewer</title>
 </head>
-<body>
+<body style="text-align:center;">
 	<h1>Stereo Web Viewer</h1>
-	<img id="image" src="image.jpg"/>
+	<h2>Simple image (without and with SWV)</h2>
+	<img src="image.jpg" />
+	<img src="image.jpg" data-swv-format="p" />
+
+	<h2>Resized image (without and with SWV)</h2>
+	<img src="image.jpg" width="500px" />
+	<img src="image.jpg" width="500px" data-swv-format="p" />
 
 	<script type="text/javascript" src="swv.js"></script>
 </body>

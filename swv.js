@@ -1,8 +1,12 @@
-var image = document.getElementById('image');
-if(image.complete){
-	transformImage(image);
-} else {
-	image.onload = function(){ transformImage(image); };
+var images = document.querySelectorAll("img[data-swv-format]");
+for (var i = 0; i < images.length; i++) {
+	var image = images[i];
+	if (image.complete) {
+		transformImage(image);
+	} else {
+		transformClosure = function(i) { return function() { transformImage(i); } };
+		image.onload = transformClosure(image);
+	}
 }
 
 function transformImage(image) {
