@@ -8,6 +8,8 @@ Status
 
 Proof of concept — It is working but has to be improved for better usability.
 
+Abandonned — See [threejs-StereoscopicEffects](https://github.com/JackDesBwa/threejs-StereoscopicEffects) project for a more advanced viewer
+
 Purpose
 -------
 
